@@ -1,36 +1,34 @@
 /* =========================================================
    Murilo Ferreira — Links
-   Conceito: a página é um arquivo de código sendo lido.
-   Barra de abas, numeração de linha, sintaxe colorida por
-   link e cursor piscando. Feito por e para quem programa.
+   Conceito: um pequeno "hub" pessoal — céu de aurora ao fundo,
+   um selo com as iniciais no topo e cartões em vidro fosco
+   com brilho na cor de cada rede. Bonito e fácil de entender
+   por qualquer pessoa que abrir a página.
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap');
 
 :root {
-  /* Paleta — inspirada em temas de editor "tokyo night" */
-  --bg: #1a1b26;
-  --bg-grid: #1f2033;
-  --surface: #20222f;
-  --surface-hover: #262a3d;
-  --border: #33374d;
-  --border-soft: #2a2e42;
+  /* Paleta — aurora sobre céu noturno */
+  --ink: #140f27;
+  --ink-2: #1c1436;
+  --violet: #8b5cf6;
+  --rose: #fb7185;
+  --teal: #2dd4bf;
+  --gold: #fbbf24;
 
-  --text: #c0caf5;
-  --text-dim: #8992b8;
-  --text-muted: #565f89;
+  --text: #f5f3ff;
+  --text-dim: #b7b0d6;
+  --text-muted: #8a83ab;
 
-  --pink: #f7768e;    /* instagram   */
-  --green: #9ece6a;   /* whatsapp    */
-  --violet: #bb9af7;  /* github      */
-  --blue: #7aa2f7;    /* acentos     */
-  --cyan: #7dcfff;
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-hover: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.12);
 
-  --mono: 'JetBrains Mono', 'Courier New', monospace;
-  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --body: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  --radius: 8px;
-  --topbar-h: 48px;
+  --radius: 20px;
 }
 
 * {
@@ -44,269 +42,242 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 15% 0%, rgba(122, 162, 247, 0.08), transparent 40%),
-    radial-gradient(circle at 85% 100%, rgba(187, 154, 247, 0.07), transparent 45%),
-    repeating-linear-gradient(
-      to bottom,
-      var(--bg-grid) 0px,
-      var(--bg-grid) 1px,
-      var(--bg) 1px,
-      var(--bg) 32px
-    ),
-    var(--bg);
+  font-family: var(--body);
   color: var(--text);
-  font-family: var(--sans);
-  padding-top: calc(var(--topbar-h) + 40px);
-  padding-bottom: 40px;
+  background: var(--ink);
+  padding: 64px 20px 48px;
   position: relative;
+  overflow-x: hidden;
 }
 
-/* --- Barra de "editor" fixa no topo, tipo aba de VSCode --- */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--topbar-h);
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  z-index: 10;
-}
-
-/* três bolinhas de "janela" à esquerda, feitas com box-shadow */
+/* --- Céu de aurora: manchas de cor suaves e desfocadas --- */
+body::before,
 body::after {
   content: "";
   position: fixed;
-  top: calc(var(--topbar-h) / 2 - 5px);
-  left: 22px;
-  width: 10px;
-  height: 10px;
   border-radius: 50%;
-  background: #f7768e;
-  box-shadow:
-    18px 0 0 #e0af68,
-    36px 0 0 #9ece6a;
-  z-index: 11;
+  filter: blur(90px);
+  opacity: 0.35;
+  z-index: 0;
+  animation: drift 22s ease-in-out infinite alternate;
 }
 
-/* nome do "arquivo" na barra, centralizado */
+body::before {
+  width: 480px;
+  height: 480px;
+  top: -160px;
+  left: -140px;
+  background: radial-gradient(circle, var(--violet), transparent 70%);
+}
+
+body::after {
+  width: 420px;
+  height: 420px;
+  bottom: -140px;
+  right: -120px;
+  background: radial-gradient(circle, var(--teal), transparent 70%);
+  animation-delay: -8s;
+}
+
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(30px, -20px) scale(1.08); }
+}
+
+/* =========================================================
+   Bloco de links
+   ========================================================= */
 .links {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 0 20px;
   position: relative;
-}
-
-.links::before {
-  content: "// murilo-ferreira / links.json";
-  display: block;
-  font-family: var(--mono);
-  font-size: 12.5px;
-  color: var(--text-muted);
-  margin: 0 0 18px 4px;
-  letter-spacing: 0.02em;
-}
-
-/* rótulo fixo simulando o título da aba do editor */
-.links::after {
-  content: "links.json";
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  height: var(--topbar-h);
-  display: flex;
-  align-items: center;
-  font-family: var(--mono);
-  font-size: 12.5px;
-  color: var(--text-dim);
-  z-index: 11;
-  pointer-events: none;
-}
-
-/* --- Cards / "linhas de código" --- */
-.links {
-  counter-reset: line;
+  z-index: 1;
+  max-width: 440px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.card {
-  counter-increment: line;
-  position: relative;
-  display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px 18px 16px 52px;
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-left: 3px solid transparent;
-  border-radius: var(--radius);
-  text-decoration: none;
-  color: inherit;
-  opacity: 0;
-  transform: translateY(8px);
-  animation: reveal 0.5s ease forwards;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  gap: 14px;
 }
 
-.card:nth-child(1) { animation-delay: 0.05s; }
-.card:nth-child(2) { animation-delay: 0.15s; }
-.card:nth-child(3) { animation-delay: 0.25s; }
-
-@keyframes reveal {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* número da linha, no "canaleta" do editor */
-.card::before {
-  content: counter(line, decimal-leading-zero);
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 40px;
+/* selo com iniciais, como retrato do topo */
+.links::before {
+  content: "MF";
+  width: 76px;
+  height: 76px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text-muted);
-  border-right: 1px solid var(--border-soft);
-  background: rgba(255, 255, 255, 0.015);
+  border-radius: 50%;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: conic-gradient(from 180deg, var(--violet), var(--rose), var(--gold), var(--teal), var(--violet));
+  box-shadow: 0 0 0 4px var(--ink), 0 8px 30px rgba(139, 92, 246, 0.35);
+  margin-bottom: 6px;
+}
+
+/* nome e subtítulo, logo abaixo do selo */
+.links::after {
+  content: "Murilo Ferreira — Dev Júnior";
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 18px;
+  letter-spacing: 0.01em;
+}
+
+/* --- Cartões --- */
+.card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  text-decoration: none;
+  color: inherit;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: rise 0.55s ease forwards;
+  transition: background 0.2s ease, border-color 0.2s ease,
+              transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:nth-child(2) { animation-delay: 0.08s; }
+.card:nth-child(3) { animation-delay: 0.16s; }
+.card:nth-child(4) { animation-delay: 0.24s; }
+
+@keyframes rise {
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .card:hover,
 .card:focus-visible {
-  background: var(--surface-hover);
-  transform: translateX(2px);
+  background: var(--glass-hover);
+  transform: translateY(-3px);
 }
 
 .card:focus-visible {
-  outline: 2px solid var(--cyan);
-  outline-offset: 2px;
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
 }
 
-/* cor de cada linha, como se fossem chaves de um objeto JS */
-.card:nth-child(1) { border-left-color: var(--pink); }
-.card:nth-child(2) { border-left-color: var(--green); }
-.card:nth-child(3) { border-left-color: var(--violet); }
+/* brilho colorido de cada rede, no hover */
+.card:nth-child(1) { border-color: rgba(251, 113, 133, 0.35); }
+.card:nth-child(1):hover { box-shadow: 0 10px 30px rgba(251, 113, 133, 0.25); }
 
-.card:nth-child(1) .conteudo h3 { color: var(--pink); }
-.card:nth-child(2) .conteudo h3 { color: var(--green); }
-.card:nth-child(3) .conteudo h3 { color: var(--violet); }
+.card:nth-child(2) { border-color: rgba(45, 212, 191, 0.35); }
+.card:nth-child(2):hover { box-shadow: 0 10px 30px rgba(45, 212, 191, 0.25); }
+
+.card:nth-child(3) { border-color: rgba(139, 92, 246, 0.35); }
+.card:nth-child(3):hover { box-shadow: 0 10px 30px rgba(139, 92, 246, 0.25); }
 
 .icone {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
   border-radius: 50%;
   object-fit: cover;
-  flex-shrink: 0;
   background: #fff;
-  padding: 4px;
-  border: 1px solid var(--border-soft);
+  padding: 5px;
 }
 
 .conteudo {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
 }
 
 .conteudo h3 {
   margin: 0;
-  font-family: var(--mono);
-  font-size: 15px;
+  font-family: var(--display);
   font-weight: 600;
-}
-
-.conteudo h3::after {
-  content: ":";
-  color: var(--text-muted);
+  font-size: 16px;
+  color: var(--text);
 }
 
 .conteudo p {
   margin: 0;
   font-size: 13.5px;
-  color: var(--text-dim);
-  font-family: var(--mono);
+  color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.conteudo p::before {
-  content: "\201C";
-}
-.conteudo p::after {
-  content: "\201D,";
-}
-
-/* cursor piscando ao final da última linha, tipo editor esperando digitação */
-.card:last-child .conteudo::after {
-  content: "";
-  display: inline-block;
-  width: 7px;
-  height: 14px;
-  margin-top: 4px;
-  background: var(--cyan);
-  animation: blink 1s steps(1) infinite;
+/* setinha sutil indicando que é clicável */
+.card::after {
+  content: "\2192";
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 16px;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
-@keyframes blink {
-  50% { opacity: 0; }
+.card:hover::after {
+  transform: translateX(3px);
+  color: var(--text);
 }
 
 /* =========================================================
-   Rodapé — estilizado como um painel de terminal
+   Rodapé
    ========================================================= */
 footer {
+  position: relative;
+  z-index: 1;
   display: block;
-  max-width: 600px;
-  margin: 56px auto 0;
-  padding: 0 20px;
-  font-family: var(--sans);
+  max-width: 440px;
+  margin: 40px auto 0;
 }
 
 .footer-container {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   overflow: hidden;
 }
 
 .footer-logo,
 .footer-links,
 .footer-contato {
-  padding: 22px 22px 4px;
+  padding: 22px 22px 6px;
 }
 
 .footer-logo h2 {
   margin: 0 0 2px;
-  font-family: var(--mono);
-  font-size: 17px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 18px;
   color: var(--text);
 }
 
 .footer-logo p {
-  margin: 0 0 6px;
-  font-size: 12.5px;
+  margin: 0 0 4px;
+  font-size: 13px;
   color: var(--text-muted);
-  font-family: var(--mono);
 }
 
 .footer-links,
 .footer-contato {
-  border-top: 1px solid var(--border-soft);
+  border-top: 1px solid var(--glass-border);
 }
 
 .footer-links h3,
 .footer-contato h3 {
-  margin: 0 0 10px;
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  margin: 0 0 12px;
+  font-family: var(--display);
+  font-size: 12px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
   font-weight: 600;
@@ -314,73 +285,57 @@ footer {
 
 .footer-links ul {
   list-style: none;
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
 }
 
 .footer-links a {
   color: var(--text-dim);
   text-decoration: none;
-  font-size: 13.5px;
+  font-size: 14px;
   transition: color 0.15s ease;
 }
 
 .footer-links a:hover,
 .footer-links a:focus-visible {
-  color: var(--cyan);
+  color: var(--teal);
 }
 
 .footer-contato p {
-  margin: 0 0 14px;
-  font-size: 13.5px;
+  margin: 0 0 16px;
+  font-size: 14px;
   color: var(--text-dim);
 }
 
 .footer-copy {
-  padding: 12px 22px;
-  border-top: 1px solid var(--border-soft);
-  background: rgba(255, 255, 255, 0.015);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  padding: 16px 22px;
+  border-top: 1px solid var(--glass-border);
+  text-align: center;
 }
 
 .footer-copy p {
   margin: 0;
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: var(--text-muted);
-  font-family: var(--mono);
-}
-
-.footer-copy::before {
-  content: "$ status: online";
-  font-family: var(--mono);
-  font-size: 11.5px;
-  color: var(--green);
 }
 
 /* =========================================================
    Responsivo
    ========================================================= */
-@media (max-width: 480px) {
-  .links::after { display: none; }
-  .card {
-    padding: 14px 14px 14px 44px;
-    gap: 12px;
-  }
-  .card::before { width: 34px; font-size: 11px; }
-  .icone { width: 36px; height: 36px; }
-  .conteudo h3 { font-size: 14px; }
-  .conteudo p { font-size: 12.5px; }
-  .footer-copy { flex-direction: column; align-items: flex-start; }
+@media (max-width: 420px) {
+  body { padding: 48px 16px 40px; }
+  .links::before { width: 64px; height: 64px; font-size: 19px; }
+  .links::after { font-size: 14.5px; }
+  .card { padding: 14px 16px; gap: 12px; }
+  .icone { width: 40px; height: 40px; }
+  .conteudo h3 { font-size: 15px; }
+  .conteudo p { font-size: 13px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .card { animation: none; opacity: 1; transform: none; }
-  .card:last-child .conteudo::after { animation: none; }
+  body::before, body::after { animation: none; }
 }
