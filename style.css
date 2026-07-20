@@ -1,0 +1,386 @@
+/* =========================================================
+   Murilo Ferreira — Links
+   Conceito: a página é um arquivo de código sendo lido.
+   Barra de abas, numeração de linha, sintaxe colorida por
+   link e cursor piscando. Feito por e para quem programa.
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Paleta — inspirada em temas de editor "tokyo night" */
+  --bg: #1a1b26;
+  --bg-grid: #1f2033;
+  --surface: #20222f;
+  --surface-hover: #262a3d;
+  --border: #33374d;
+  --border-soft: #2a2e42;
+
+  --text: #c0caf5;
+  --text-dim: #8992b8;
+  --text-muted: #565f89;
+
+  --pink: #f7768e;    /* instagram   */
+  --green: #9ece6a;   /* whatsapp    */
+  --violet: #bb9af7;  /* github      */
+  --blue: #7aa2f7;    /* acentos     */
+  --cyan: #7dcfff;
+
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --radius: 8px;
+  --topbar-h: 48px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(122, 162, 247, 0.08), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(187, 154, 247, 0.07), transparent 45%),
+    repeating-linear-gradient(
+      to bottom,
+      var(--bg-grid) 0px,
+      var(--bg-grid) 1px,
+      var(--bg) 1px,
+      var(--bg) 32px
+    ),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  padding-top: calc(var(--topbar-h) + 40px);
+  padding-bottom: 40px;
+  position: relative;
+}
+
+/* --- Barra de "editor" fixa no topo, tipo aba de VSCode --- */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+/* três bolinhas de "janela" à esquerda, feitas com box-shadow */
+body::after {
+  content: "";
+  position: fixed;
+  top: calc(var(--topbar-h) / 2 - 5px);
+  left: 22px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f7768e;
+  box-shadow:
+    18px 0 0 #e0af68,
+    36px 0 0 #9ece6a;
+  z-index: 11;
+}
+
+/* nome do "arquivo" na barra, centralizado */
+.links {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+}
+
+.links::before {
+  content: "// murilo-ferreira / links.json";
+  display: block;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 0 0 18px 4px;
+  letter-spacing: 0.02em;
+}
+
+/* rótulo fixo simulando o título da aba do editor */
+.links::after {
+  content: "links.json";
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--text-dim);
+  z-index: 11;
+  pointer-events: none;
+}
+
+/* --- Cards / "linhas de código" --- */
+.links {
+  counter-reset: line;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  counter-increment: line;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px 16px 52px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid transparent;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: inherit;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: reveal 0.5s ease forwards;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.15s; }
+.card:nth-child(3) { animation-delay: 0.25s; }
+
+@keyframes reveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* número da linha, no "canaleta" do editor */
+.card::before {
+  content: counter(line, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  border-right: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.card:hover,
+.card:focus-visible {
+  background: var(--surface-hover);
+  transform: translateX(2px);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+/* cor de cada linha, como se fossem chaves de um objeto JS */
+.card:nth-child(1) { border-left-color: var(--pink); }
+.card:nth-child(2) { border-left-color: var(--green); }
+.card:nth-child(3) { border-left-color: var(--violet); }
+
+.card:nth-child(1) .conteudo h3 { color: var(--pink); }
+.card:nth-child(2) .conteudo h3 { color: var(--green); }
+.card:nth-child(3) .conteudo h3 { color: var(--violet); }
+
+.icone {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #fff;
+  padding: 4px;
+  border: 1px solid var(--border-soft);
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.conteudo h3 {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.conteudo h3::after {
+  content: ":";
+  color: var(--text-muted);
+}
+
+.conteudo p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conteudo p::before {
+  content: "\201C";
+}
+.conteudo p::after {
+  content: "\201D,";
+}
+
+/* cursor piscando ao final da última linha, tipo editor esperando digitação */
+.card:last-child .conteudo::after {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  margin-top: 4px;
+  background: var(--cyan);
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* =========================================================
+   Rodapé — estilizado como um painel de terminal
+   ========================================================= */
+footer {
+  display: block;
+  max-width: 600px;
+  margin: 56px auto 0;
+  padding: 0 20px;
+  font-family: var(--sans);
+}
+
+.footer-container {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.footer-logo,
+.footer-links,
+.footer-contato {
+  padding: 22px 22px 4px;
+}
+
+.footer-logo h2 {
+  margin: 0 0 2px;
+  font-family: var(--mono);
+  font-size: 17px;
+  color: var(--text);
+}
+
+.footer-logo p {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+
+.footer-links,
+.footer-contato {
+  border-top: 1px solid var(--border-soft);
+}
+
+.footer-links h3,
+.footer-contato h3 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.footer-links ul {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 13.5px;
+  transition: color 0.15s ease;
+}
+
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  color: var(--cyan);
+}
+
+.footer-contato p {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+.footer-copy {
+  padding: 12px 22px;
+  border-top: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.015);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer-copy p {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+
+.footer-copy::before {
+  content: "$ status: online";
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--green);
+}
+
+/* =========================================================
+   Responsivo
+   ========================================================= */
+@media (max-width: 480px) {
+  .links::after { display: none; }
+  .card {
+    padding: 14px 14px 14px 44px;
+    gap: 12px;
+  }
+  .card::before { width: 34px; font-size: 11px; }
+  .icone { width: 36px; height: 36px; }
+  .conteudo h3 { font-size: 14px; }
+  .conteudo p { font-size: 12.5px; }
+  .footer-copy { flex-direction: column; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { animation: none; opacity: 1; transform: none; }
+  .card:last-child .conteudo::after { animation: none; }
+}
